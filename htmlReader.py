@@ -6,7 +6,7 @@ import re
 def main():
 	global soup 
 	soup = BeautifulSoup(open("2.html"), "lxml")
-
+	
 	nameList = getName()
 	number = len(nameList)
 	skuList = getSKU()
@@ -16,26 +16,17 @@ def main():
 	for i in range(0, number):
 		print nameList[i] + ' ' + skuList[i] + ' ' + priceList[i] + ' ' + quantityList[i]
 
+
 def getName():
-	namePattern = re.compile("h5")
-	nameTag = soup.find_all(namePattern)
 	nameList = []
-	for name in nameTag:
-		name = str(name)
-		name = name.lstrip('<h5 class="title"><span id="order_item_1234567890_title">').rstrip('</span></h5>')
-		nameList.append(name)
+	for name in soup.find_all('h5'):
+		nameList.append(name.string)
 	return nameList
 
 def getSKU():
 	skuList = []
-	skuTag = soup.find_all(text = re.compile('\d{7,8}|U\d{6,7}'))
-	for sku in skuTag:
-		try:
-			sku = str(sku).strip()
-			if re.match('^\d{7,8}$|^U\d{6,7}$', sku):
-				skuList.append(sku)
-		except:
-			continue
+	for sku in soup.select('td div strong'):
+			skuList.append(sku.next_sibling)
 	return skuList
 
 def getPrice(number):
@@ -50,11 +41,9 @@ def getPrice(number):
 	return priceList
 
 def getQuantity():
-	quantityTag = soup.find_all('td', 'a-center')
 	quantityList = []
-	for quantity in quantityTag:
-		quantity = str(quantity).lstrip('<td class="a-center">').rstrip('</td>')
-		quantityList.append(quantity)
+	for quantity in soup.find_all('td', 'a-center'):
+		quantityList.append(quantity.string)
 	return quantityList
 	
 
