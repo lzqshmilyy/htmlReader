@@ -8,30 +8,30 @@ import codecs
 import sys
 
 def main():
-	global soup 
-	soup = BeautifulSoup(open("2.html"), "lxml")
+	global soup
+	#open the html file and get the product information 
+	soup = BeautifulSoup(open("1.html"), "lxml")
 	
 	nameList = getName()
 	number = len(nameList)
 	skuList = getSKU()
 	priceList = getPrice(number)
 	quantityList = getQuantity()
-	"""
-	for i in range(0, number):
-		print nameList[i]
-		print skuList[i]
-		print priceList[i]
-		print quantityList[i]
-"""
 
-	csvfile = file('sales.csv', 'wb')
+	#oprn the csv file and write the information into csv
+	csvfile = open('sales.csv', 'wb+')
+	csvfile.write('\xEF\xBB\xBF') #add BOM to the file, then it will show chinese in excel
 	writer = csv.writer(csvfile)
+
 	writer.writerow(['Name', 'SKU', 'Price', 'Quantity'])
 
 	data = []
 	for i in range(0, number):
 		line = [nameList[i], skuList[i], priceList[i], quantityList[i]]
 		data.append(line)
+
+	emptyline = ['summary',]
+	data.append(emptyline)
 
 	writer.writerows(data)
 
@@ -42,7 +42,7 @@ def main():
 def getName():
 	nameList = []
 	for name in soup.find_all('h5'):
-		nameList.append(name.string.encode('ANSI', 'replace'))
+		nameList.append(name.string.encode('UTF_8', 'replace'))
 	return nameList
 
 def getSKU():
