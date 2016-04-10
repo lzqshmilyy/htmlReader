@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
-from bs4 import *
+from bs4 import BeautifulSoup
 import re
 import csv
 import os
