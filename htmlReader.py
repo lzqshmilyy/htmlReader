@@ -4,33 +4,38 @@
 from bs4 import *
 import re
 import csv
-import codecs
-import sys
+import os
 
 def main():
+	nameList = os.listdir('/Users/Isaac/Documents/Python/htmlReader/html')
+	for fileName in nameList:
+		writeCSV('/Users/Isaac/Documents/Python/htmlReader/html/' + fileName)
+
+def writeCSV(fileName):
 	global soup
 	#open the html file and get the product information 
-	soup = BeautifulSoup(open("1.html"), "lxml")
+	soup = BeautifulSoup(open(fileName), "lxml")
 	
 	nameList = getName()
 	number = len(nameList)
 	skuList = getSKU()
 	priceList = getPrice(number)
 	quantityList = getQuantity()
+	date = fileName.rstrip('.html').lstrip('Users/Isaac/Documents/Python/htmlReader/html/')
 
 	#oprn the csv file and write the information into csv
-	csvfile = open('sales.csv', 'wb+')
+	csvfile = open('sales.csv', 'a+')
 	csvfile.write('\xEF\xBB\xBF') #add BOM to the file, then it will show chinese in excel
 	writer = csv.writer(csvfile)
 
-	writer.writerow(['Name', 'SKU', 'Price', 'Quantity'])
+	writer.writerow(['Date','Name', 'SKU', 'Price', 'Quantity'])
 
 	data = []
 	for i in range(0, number):
-		line = [nameList[i], skuList[i], priceList[i], quantityList[i]]
+		line = [date, nameList[i], skuList[i], priceList[i], quantityList[i]]
 		data.append(line)
 
-	emptyline = ['summary',]
+	emptyline = []
 	data.append(emptyline)
 
 	writer.writerows(data)
